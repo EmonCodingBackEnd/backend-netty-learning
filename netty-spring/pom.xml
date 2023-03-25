@@ -3,6 +3,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>netty-spring-01-basic</module>
+    </modules>
 
     <parent>
         <artifactId>backend-netty-learning</artifactId>
@@ -16,6 +19,11 @@
     <dependencyManagement>
         <dependencies>
             <!-- 定义三方包 beg -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
             <!-- 定义三方包 end -->
 
 
@@ -70,7 +78,10 @@
         </dependency>
 
         <!-- ==================================================华丽的分割线================================================== -->
-
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+        </dependency>
         <!-- 定义三方包 end -->
 
 
