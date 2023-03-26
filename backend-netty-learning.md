@@ -6,11 +6,19 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR/?spm_id_from=333.337.search-card.all.click&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR?p=18&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
 https://www.bilibili.com/video/BV1E4411H73v/?spm_id_from=333.337.search-card.all.click&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
+JVM：
+
+https://www.bilibili.com/video/BV1PJ411n7xZ/?spm_id_from=333.788.recommend_more_video.2&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
+前端三件套：
+
+https://www.bilibili.com/read/cv5650633
 
 
 
@@ -214,3 +222,23 @@ public abstract boolean isDirect();
 
 ### FileChannel类
 
+主要用来对本地文件进行IO操作，常见的方法有：
+
+```java
+// 从通道读取数据并放到缓冲区中
+public abstract int read(ByteBuffer dst)
+// 把缓冲区中的数据写到通道中
+public abstract int write(ByteBuffer src)
+// 从目标通道中复制数据到当前通道
+public abstract long transferFrom(ReadableByteChannel src, long position, long count)
+// 把数据从当前通道复制给目标通道
+public abstract long transferTo(long position, long count, WritableByteChannel target)
+```
+
+## 关于Buffer和Channel的注意事项和细节
+
+1）ByteBuffer支持类型化的put和get，put放入的是什么数据类型，get就应该使用相应的数据类型来取出，负责可能有BufferUnderflowException异常。
+
+2）可以将一个普通Buffer转成只读Buffer。
+
+3）NIO还提供了MappedByteBuffer，可以让文件直接在内存（堆外内存）中进行修改，而如何同步到文件由NIO来完成。
