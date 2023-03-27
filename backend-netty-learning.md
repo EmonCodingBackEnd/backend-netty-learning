@@ -16,11 +16,25 @@ JVM：
 
 https://www.bilibili.com/video/BV1PJ411n7xZ/?spm_id_from=333.788.recommend_more_video.2&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
+MySQL：https://www.bilibili.com/video/BV1iq4y1u7vj/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
+Spring：
+
+https://www.bilibili.com/video/BV1kR4y1b7Qc/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
+SpringBoot2：
+
+https://www.bilibili.com/video/BV19K4y1L7MT/
+
+SpringCloud:
+
+https://www.bilibili.com/video/BV18E411x7eT/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
 前端三件套：
 
 https://www.bilibili.com/read/cv5650633
 
-
+https://www.bilibili.com/video/BV1p84y1P7Z5/?p=4&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 # 一、开始
 
@@ -242,3 +256,5 @@ public abstract long transferTo(long position, long count, WritableByteChannel t
 2）可以将一个普通Buffer转成只读Buffer。
 
 3）NIO还提供了MappedByteBuffer，可以让文件直接在内存（堆外内存）中进行修改，而如何同步到文件由NIO来完成。
+
+4）NIO还支持通过多个Buffer（即Buffer数组）完成读写操作，即Scattering（[ˈskætərɪŋ]分散）和Gethering（[[ˈgetərɪŋ]]聚合）。

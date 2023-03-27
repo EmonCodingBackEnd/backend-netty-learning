@@ -17,7 +17,7 @@ public class NIOByteBufferPutGet {
         byteBuffer.flip();
         System.out.println(byteBuffer.getInt());
         System.out.println(byteBuffer.getLong());
-        System.out.println(byteBuffer.getChar());
+        System.out.println(byteBuffer.getChar()); // 如果该位置使用 getLong() 会报错：BufferUnderflowException
         System.out.println(byteBuffer.getShort());
     }
 }
