@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR?p=18&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR/?p=23&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -249,7 +249,7 @@ public abstract long transferFrom(ReadableByteChannel src, long position, long c
 public abstract long transferTo(long position, long count, WritableByteChannel target)
 ```
 
-## 关于Buffer和Channel的注意事项和细节
+### 关于Buffer和Channel的注意事项和细节
 
 1）ByteBuffer支持类型化的put和get，put放入的是什么数据类型，get就应该使用相应的数据类型来取出，负责可能有BufferUnderflowException异常。
 
@@ -258,3 +258,44 @@ public abstract long transferTo(long position, long count, WritableByteChannel t
 3）NIO还提供了MappedByteBuffer，可以让文件直接在内存（堆外内存）中进行修改，而如何同步到文件由NIO来完成。
 
 4）NIO还支持通过多个Buffer（即Buffer数组）完成读写操作，即Scattering（[ˈskætərɪŋ]分散）和Gethering（[[ˈgetərɪŋ]]聚合）。
+
+## 选择器
+
+1）Java的NIO，用非阻塞的IO方式。可以用一个线程，处理多个客户端连接，就会使用到Selector（选择器）。
+
+2）Selector能够检测多个注册的的通道上是否有事件发生（注意：多个Channel以事件的方式可以注册到同一个Selector），如果有事件发生，便获取事件然后针对每个事件进行相应的处理。这样就可以只用一个线程去管理多个通道，也就是管理多个连接和请求。
+
+3）只有在连接真正有读写事件发生时，才会进行读写，就大大减少了系统开学，并且不必为每个连接都创建一个线程，不用去维护多个线程。
+
+4）避免了多线程之间的上下文切换导致的开销。
+
+### 特点再说明：
+
+1）Netty的IO线程NioEventLoop聚合了Selector（选择器，也叫多路复用器），可以同时并发处理成百上千个客户端连接。
+
+2）当线程从某客户端Socket通道进行读写数据时，若没有数据可用，该线程可以进行其他任务。
+
+3）线程通常将非阻塞I/O的空闲时间用于在其他通道上执行I/O操作，所以单独的线程可以管理多个输入和输出通道。
+
+4）由于读写操作都是非阻塞的，这就可以充分提升I/O线程的运行效率，避免由于频繁I/O阻塞导致的线程挂起。
+
+5）一个IO线程可以并发处理N个客户端连接和读写操作，这从根本上解决了传统同步阻塞I/O一连接一线程模型，架构的性能、弹性伸缩能力和可靠性都得到了极大的提升。
+
+### Selector API
+
+```java
+// 得到一个选择器对象
+public static Selector open()
+// 监控所有注册的通道，当其中有I/O操作可以进行时，将对应的SelectionKey加入到内部结合中并返回，参数用来设置超时时间
+public abstract int selectNow(); // 不阻塞，立马返还
+public abstract int select() // 阻塞
+public abstract int select(long timeout)  // 阻塞 timeout 毫秒， 在 timeout 毫秒后返回
+public abstract Selector wakeup(); // 唤醒Selector
+// 从内部集合中得到所有的SelectionKey
+public abstract Set<SelectionKey> selectedKeys();
+```
+
+### 注意事项
+
+1）NIO中的ServerSocketChannel功能类似ServerSocket，SocketChannel功能类似Socket
+
