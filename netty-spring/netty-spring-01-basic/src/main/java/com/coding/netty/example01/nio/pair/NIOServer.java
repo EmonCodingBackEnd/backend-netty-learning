@@ -1,4 +1,4 @@
-package com.coding.netty.example01.nio;
+package com.coding.netty.example01.nio.pair;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -45,6 +45,7 @@ public class NIOServer {
                 // 如果是 OP_ACCEPT，表示有新的客户端连接
                 if (selectionKey.isAcceptable()) {
                     SocketChannel socketChannel = serverSocketChannel.accept();
+                    System.out.println("客户端连接成功，生成了一个 socketChannel:" + socketChannel.hashCode());
                     // 设置为非阻塞，否则register时会提示：java.nio.channels.IllegalBlockingModeException
                     socketChannel.configureBlocking(false);
                     // 将 socketChannel 注册到 selecotr，关注事件为 OP_READ

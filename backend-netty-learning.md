@@ -16,6 +16,10 @@ JVM：
 
 https://www.bilibili.com/video/BV1PJ411n7xZ/?spm_id_from=333.788.recommend_more_video.2&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
+Nginx：
+
+https://www.bilibili.com/video/BV1yS4y1N76R/?spm_id_from=333.788.recommend_more_video.2
+
 MySQL：https://www.bilibili.com/video/BV1iq4y1u7vj/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 Spring：
@@ -305,9 +309,11 @@ NIO非阻塞网络编程相关的（Selector、SelectionKey、ServerSocketChanne
 
 ![image-20230328085629703](images/image-20230328085629703.png)
 
-1）当客户端连接时，会通过ServerSocketChannel得到对应的SocketChannel
+1）创建ServerSocketChannel，设置非阻塞，监听指定端口，并注册到Selector上，Selector保持监听状态。
 
-2）将SocketChannel注册到Selector上，
+2）当客户端连接时，会通过ServerSocketChannel得到对应的SocketChannel
+
+3）将SocketChannel注册到Selector上，
 
 ```java
 public final SelectionKey register(Selector sel, int ops)
@@ -315,13 +321,13 @@ public final SelectionKey register(Selector sel, int ops)
 
 一个 Selector 上可以注册多个 SocketChannel。
 
-3）注册后返回一个 SelectionKey，会和该 Selector 关联（集合）
+4）注册后返回一个 SelectionKey，会和该 Selector 关联（集合）
 
-4）Selector 进行监听 select 方法，返回有事件发生的通道的个数。
+5）Selector 进行监听 select 方法，返回有事件发生的通道的个数。
 
-5）进一步得到各个 SelectionKey
+6）进一步得到各个 SelectionKey
 
-6）再通过 SelectionKey 反向获取 SocketChannel，方法 channel()
+7）再通过 SelectionKey 反向获取 SocketChannel，方法 channel()
 
-7）可以通过得到的 channel，完成业务处理。
+8）可以通过得到的 channel，完成业务处理。
 
