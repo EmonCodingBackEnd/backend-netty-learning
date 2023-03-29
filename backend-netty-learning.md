@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR/?p=23&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR/?p=24&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -298,4 +298,30 @@ public abstract Set<SelectionKey> selectedKeys();
 ### 注意事项
 
 1）NIO中的ServerSocketChannel功能类似ServerSocket，SocketChannel功能类似Socket
+
+### NIO非阻塞网络编程原理分析图
+
+NIO非阻塞网络编程相关的（Selector、SelectionKey、ServerSocketChannel和SocketChannel）关系梳理图。
+
+![image-20230328085629703](images/image-20230328085629703.png)
+
+1）当客户端连接时，会通过ServerSocketChannel得到对应的SocketChannel
+
+2）将SocketChannel注册到Selector上，
+
+```java
+public final SelectionKey register(Selector sel, int ops)
+```
+
+一个 Selector 上可以注册多个 SocketChannel。
+
+3）注册后返回一个 SelectionKey，会和该 Selector 关联（集合）
+
+4）Selector 进行监听 select 方法，返回有事件发生的通道的个数。
+
+5）进一步得到各个 SelectionKey
+
+6）再通过 SelectionKey 反向获取 SocketChannel，方法 channel()
+
+7）可以通过得到的 channel，完成业务处理。
 
