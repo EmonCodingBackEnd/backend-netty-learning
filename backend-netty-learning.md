@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR/?p=29&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR/?p=33&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -39,6 +39,10 @@ https://www.bilibili.com/video/BV18E411x7eT/?vd_source=b850b3a29a70c8eb888ce7dff
 https://www.bilibili.com/read/cv5650633
 
 https://www.bilibili.com/video/BV1p84y1P7Z5/?p=4&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
+在线支付：
+
+https://www.bilibili.com/video/BV1US4y1D77m/?spm_id_from=333.788.recommend_more_video.2&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 # 一、开始
 
@@ -331,3 +335,139 @@ public final SelectionKey register(Selector sel, int ops)
 
 8）可以通过得到的 channel，完成业务处理。
 
+
+
+## NIO与零拷贝
+
+### 零拷贝基本介绍
+
+1）零拷贝是网络编程的关键，很多性能优化都离不开。
+
+2）在Java程序中，常用的零拷贝有mmap（内存映射）和sendFile。那么，他们在OS里，到底是怎么样的一个的设计？我们分析mmap和sendFile这两个零拷贝。
+
+3）另外，我们看下NIO中如何使用零拷贝。
+
+### 普通的IO
+
+我们以读取一个 本地磁盘文件的内容并通过网络发送为例，我们先要说说一个普通的IO操作是怎么样的。
+
+![img](images/format-normal-webp.webp)
+
+1）系统接收到网络用户读取文件的请求
+2）应用程序发起系统调用, 从用户态切换到内核态(第一次上下文切换)
+3）内核态中把数据从硬盘文件读取到内核中间缓冲区(kernel buf)
+4）数据从内核中间缓冲区(kernel buf)复制到(用户态)应用程序缓冲区(app buf),从内核态切换回到用户态(第二次上下文切换)，Read操作完毕。
+5）应用程序开始发送数据到网络上
+6）应用程序发起系统调用,从用户态切换到内核态(第三次上下文切换)
+7）内核中再把数据从socket的缓冲区(socket buf)发送到网卡的缓冲区(NIC buf)上
+8）从内核态切换回到用户态(第四次上下文切换)，Write操作完毕
+
+由上述流程得知，一次read-send涉及到四次拷贝：
+
+1）硬盘拷贝到内核缓冲区（DMA COPY）
+
+2）内核缓冲区拷贝到应用程序缓冲区（CPU COPY）
+
+3）应用程序缓冲区拷贝到Socket缓冲区（CPU COPY）
+
+4）Socket缓冲区拷贝到网卡的缓冲区（DMA COPY）
+
+> 注：DMA（direct memory access）
+
+#### DMA COPY和CPU COPY
+
+简单来说，DMA COPY是由硬盘的芯片完成的，不需要CPU参与，把CPU的算力解放出来了。
+
+其中涉及到2次CPUP中断，还有4次的上下文切换。
+
+很明显，第二次和第三次的COPY只是把数据复制到应用程序缓冲区，然后又原封不动的复制回来，为此带来了两次的CPU COPY和两次上下文切换，是完全没有必要的，那么有么有什么办法能够解决掉这种没有意义的复制呢？
+
+### MMap（减少1次COPY）
+
+能否让应用程序缓冲区共享内核缓冲区呢？
+
+这样发送的时候就不需要把数据从内核缓冲区拷贝到应用程序缓冲区了，直接可以让Socket缓冲区读取内核缓冲区的数据，减少一次COPY。
+
+这就是MMap（内存映射文件）技术：也即是，将一个文件或者其它对象映射到进程的地址空间，实现文件磁盘地址和进程虚拟地址空间中一段虚拟地址的一一对应关系。
+
+![img](images/format-mmap-webp.webp)
+
+应用程序调用MMap，磁盘文件中的数据通过DMA拷贝到内核缓冲区，接着操作系统会将这个缓冲区与应用程序共享，这样就不用往用户空间拷贝。应用程序调用write，操作系统直接将数据从内核缓冲区拷贝到Socket缓冲区，最好再通过DMA拷贝到网卡发出去。
+
+MMap除了在发送的时候有应用，在写入的时候也是有应用的，比如Kafka的落盘技术就用到了MMap。Kafka数据写入、是写入这块内存空间，但实际这块内存和OS内核内存有映射，也就是相当于写在内核内存空间了。且这块内存空间、内核直接能够访问到，直接落入磁盘。也就是说Kafka写入数据的时候并不是直接落盘的。
+
+### 零拷贝（sendFile，减少2次COPY）
+
+虽然有MMap技术，但是还是会有好几次COPY。
+
+1）硬盘拷贝到内核缓冲区（DMA COPY）
+
+2）内核缓冲区拷贝到Socket缓冲区（CPU COPY）
+
+3）Socket缓冲区拷贝到网卡的缓冲区（DMA COPY）
+
+如果能直接从内核缓冲区COPY到网卡缓冲区就好了。
+
+Linux内核2.1开始引入一个叫sendFile系统调用，在内核2.4一会的版本中，Linux内核对Socket缓冲区描述符做了优化，通过这次优化，sendFile系统调用可以在只复制Kernel Buffer的少量元信息的基础上，把数据直接从Kernel Buffer复制到网卡的Buffer中去。从而避免了从“内核缓冲区”拷贝到“Socket缓冲区”的这一次拷贝。
+
+这个优化后的sendFile，我们称之为支持scatter-gather特性的sendFile。
+
+在支持scatter-gather特性的sendFile的支撑下，我们的read-send模型可以优化为：
+
+![img](images/format-sendfile-webp.webp)
+
+1）应用程序开始读文件的操作
+2）应用程序发起系统调用, 从用户态进入到内核态(第一次上下文切换)
+3）内核态中把数据从硬盘文件读取到内核中间缓冲区
+4）内核态中把数据在内核缓冲区的位置(offset)和数据大小(size)两个信息追加(append)到socket的缓冲区中去
+5）网卡的buf上根据socekt缓冲区的offset和size从内核缓冲区中直接拷贝数据
+6）从内核态返回到用户态(第二次上下文切换)
+
+最后数据拷贝变成只有两次DMA COPY:
+
+1）硬盘拷贝到内核缓冲区（DMA COPY）
+
+2）内核缓冲区拷贝到网卡的缓冲区（DMA COPY）
+
+**这里明明还有2次copy，为什么叫零拷贝？因为这两次COPY都是DMA copy，是不需要CPU参与的。**
+
+### 零拷贝的再次理解
+
+1）我们说零拷贝，是从操作系统的角度来说的。因为内核缓冲区之间，没有数据是重复的（只有Kernel Buffer有一份数据）。
+
+2）零拷贝不仅仅带来更少的数据复制，还能带来其他的性能优势，例如更少的上下文切换，更少的CPU缓存伪共享以及无CPU校验和计算。
+
+### MMap和sendFile的区别
+
+1）mmap适合小数据流量读写，sendFile适合大文件传输。
+
+2）mmap需要4次上下文切换，3次数据拷贝；sendFile需要3次上下文切换，最少2次数据拷贝。
+
+3）sendFile可以利用DMA方式，不再使用CPU拷贝；mmap则只能减少1次CPU拷贝（必须从内核缓冲区利用CPU拷贝到Socket缓冲区）。
+
+
+
+## Java AIO基本介绍
+
+1）JDK7引入了 Asynchronous I/O，即AIO。在进行I/O编程中，常用到两种模式：Reactor[/riˈæktə(r)/]和Proactor。Java的NIO就是Reactor，当有事件触发时，服务器端得到通知，进行相应的处理。
+
+2）AIO即NIO2.0，叫做异步不阻塞的IO。AIO引入异步通道的概念，采用了Proactor模式，简化了程序编写，**有效的请求才启动线程，它的特点是先由操作系统完成后才通知服务端程序启动线程去处理**，一般适用于连接数较多且连接时间较长的应用。
+
+3）目前AIIO还没有广泛应用，Netty也是基于NIO，而不是AIO。
+
+## BIO、NIO、AIO对比表
+
+|          | BIO      | NIO                    | AIO        |
+| -------- | -------- | ---------------------- | ---------- |
+| IO模型   | 同步阻塞 | 同步非阻塞（多路复用） | 异步非阻塞 |
+| 编程难度 | 简单     | 复杂                   | 复杂       |
+| 可靠性   | 差       | 好                     | 好         |
+| 吞吐量   | 低       | 高                     | 高         |
+
+举例说明：
+
+1）同步阻塞：到理发店理发，就一直等待理发师，直到轮到自己理发。
+
+2）同步非阻塞：到理发店理发，发现前面有其他人理发，给理发师说下，先干其他事情，一会过来看是否轮到自己。
+
+3）异步非阻塞：给理发师打电话，让理发师上门服务，自己干其他事情，理发师来你家里给你理发。

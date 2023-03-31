@@ -1,4 +1,4 @@
-package com.coding.netty.example01.chatroom;
+package com.coding.netty.example01.nio.chatroom;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
