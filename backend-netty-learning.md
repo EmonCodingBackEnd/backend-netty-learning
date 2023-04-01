@@ -525,6 +525,8 @@ Netty对JDK自带的NIO的API进行了封装，解决了上述问题。
 
 ## 线程模型基本介绍
 
+[Scalable IO in Java](https://gee.cs.oswego.edu/dl/cpjslides/nio.pdf)
+
 1）不同的线程模型，对程序的性能有很大影响，为了搞清Netty线程模型，我们来系统的讲解下各个线程模型，最后看看Netty线程模型有什么优越性。
 
 2）目前存在的线程模型有：
@@ -696,6 +698,10 @@ Reactor的叫法：1-反应器模型；2-分发者模型（Dispatcher）；3-通
 ### Netty模型
 
 ![image-20230401121936747](images/image-20230401121936747.png)
+
+Netty模型纠正图：
+
+![img](images/netty2.png)
 
 **方案说明：**
 
