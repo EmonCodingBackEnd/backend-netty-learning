@@ -7,8 +7,11 @@ import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
+import lombok.extern.slf4j.Slf4j;
+
 // @formatter:off
 /**
+ * 【单Reactor单线程】
  NIO网络编程应用实例-群聊系统
  实例要求：
  1）编写一个NIO群聊系统，实现服务器端和客户端之间的数据简单通讯（非阻塞）
@@ -18,6 +21,7 @@ import java.util.Iterator;
  5）目的：进一步理解NIO非阻塞网络编程机制
  */
 // @formatter:on
+@Slf4j
 public class ChatRoomServer {
     // 定义属性
     private final Selector selector;
@@ -40,6 +44,7 @@ public class ChatRoomServer {
 
     // 监听
     private void listen() {
+        log.info("监听线程");
         try {
             while (true) {
                 int count = selector.select();
@@ -99,7 +104,7 @@ public class ChatRoomServer {
 
     // 转发消息给其他客户（通道）
     private void sendInfoToOther(String msg, SocketChannel self) throws IOException {
-        System.out.println("服务器转发消息中......");
+        log.info("监听线程：服务器转发消息中......");
 
         // 遍历所有注册到 selector 上的 SocketChannel，并排除 self
         for (SelectionKey selectionKey : selector.keys()) {

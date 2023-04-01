@@ -56,6 +56,7 @@ public class NIOServer {
                 }
                 // 如果是 OP_READ
                 else if (selectionKey.isReadable()) {
+                    // SocketChannelImpl
                     SocketChannel channel = (SocketChannel)selectionKey.channel();
                     // 获取到该 channel 关联的buffer
                     ByteBuffer buffer = (ByteBuffer)selectionKey.attachment();
