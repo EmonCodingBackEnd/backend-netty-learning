@@ -1,5 +1,7 @@
 package com.coding.netty.example01.netty.simple;
 
+import java.util.concurrent.TimeUnit;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -28,6 +30,20 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // shortTask(ctx, (ByteBuf)msg);
+
+        // 比如这里我们有一个非常耗时的业务 -> 异步执行 -> 提交该 channel 对应的 NioEventLoop 的 taskQueue中
+        // longTask1(ctx);
+        // longTask2(ctx);
+        // longTask3(ctx);
+
+        // 用户自定义定时任务 -> 该任务是提交到 scheduleTaskQueue 中
+        scheduleTask(ctx);
+
+        super.channelRead(ctx, msg);
+    }
+
+    private void shortTask(ChannelHandlerContext ctx, ByteBuf msg) {
         log.info("服务器读取线程");
         System.out.println("server ctx=" + ctx);
         System.out.println("看看 channel 和 pipeline 的关系");
@@ -35,10 +51,61 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         ChannelPipeline pipeline = ctx.pipeline(); // 本质是一个双向链表，出站入站
 
         // 将 msg 转成一个 ByteBuf，注意不是 NIO 的 ByteBuffer
-        ByteBuf byteBuf = (ByteBuf)msg;
+        ByteBuf byteBuf = msg;
         System.out.println("客户端发送的消息是：" + byteBuf.toString(CharsetUtil.UTF_8));
         System.out.println("客户端地址：" + ctx.channel().remoteAddress());
-        super.channelRead(ctx, msg);
+    }
+
+    private void longTask1(ChannelHandlerContext ctx) throws InterruptedException {
+        Thread.sleep(10 * 1000);
+        ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~喵2", CharsetUtil.UTF_8));
+        System.out.println("go on......");
+    }
+
+    private void longTask2(ChannelHandlerContext ctx) throws InterruptedException {
+        ctx.channel().eventLoop().execute(() -> {
+            try {
+                Thread.sleep(10 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~喵2", CharsetUtil.UTF_8));
+        });
+        System.out.println("go on......");
+    }
+
+    private void longTask3(ChannelHandlerContext ctx) throws InterruptedException {
+        // 10秒后可见
+        ctx.channel().eventLoop().execute(() -> {
+            try {
+                Thread.sleep(10 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~喵2", CharsetUtil.UTF_8));
+        });
+        // 10+10秒后可见
+        ctx.channel().eventLoop().execute(() -> {
+            try {
+                Thread.sleep(10 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~喵3", CharsetUtil.UTF_8));
+        });
+        System.out.println("go on......");
+    }
+
+    private void scheduleTask(ChannelHandlerContext ctx) {
+        ctx.channel().eventLoop().schedule(() -> {
+            try {
+                Thread.sleep(5 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~喵4", CharsetUtil.UTF_8));
+        }, 5, TimeUnit.SECONDS);
+        System.out.println("go on......");
     }
 
     /**
