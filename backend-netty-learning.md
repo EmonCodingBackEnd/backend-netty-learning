@@ -10,7 +10,7 @@ https://www.bilibili.com/video/BV1DJ411m7NR/?p=36&spm_id_from=pageDriver&vd_sour
 
 数据结构与算法：
 
-https://www.bilibili.com/video/BV1E4411H73v/?spm_id_from=333.337.search-card.all.click&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR?p=49&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 JVM：
 
@@ -549,6 +549,8 @@ Netty对JDK自带的NIO的API进行了封装，解决了上述问题。
 
 ![img](images/normal-io.png)
 
+![img](images/normal-io-2.png)
+
 - 黄色的框表示对象
 - 蓝色的框表示线程
 - 白色的框表示方法（API）
@@ -583,6 +585,8 @@ Reactor的叫法：1-反应器模型；2-分发者模型（Dispatcher）；3-通
 
 ![image-20230401071034832](images/image-20230401071034832.png)
 
+![01c4116d5f2e49cd8ab4e059a65fb01d](images/01c4116d5f2e49cd8ab4e059a65fb01d.png)
+
 **核心组成：**
 
 1）Reactor：在一个单独的线程中运行，负责监听和分发事件，分发给适当的程序来对IO事件作出反应。
@@ -594,6 +598,8 @@ Reactor的叫法：1-反应器模型；2-分发者模型（Dispatcher）；3-通
 #### 1）单Reactor单线程
 
 ![image-20230401072230932](images/image-20230401072230932.png)
+
+![b76a7117595c4d618cbc982be113b0cd](images/b76a7117595c4d618cbc982be113b0cd.png)
 
 **方案说明：**
 
@@ -625,6 +631,8 @@ Reactor的叫法：1-反应器模型；2-分发者模型（Dispatcher）；3-通
 
 ![image-20230401074711007](images/image-20230401074711007.png)
 
+![4d47ed383bac459ebdd3c9a1a785ef50](images/4d47ed383bac459ebdd3c9a1a785ef50.png)
+
 **方案说明：**
 
 1）Reactor对象通过select监控客户端请求事件，收到事件后，通过 dispatch 进行分发；
@@ -648,6 +656,8 @@ Reactor的叫法：1-反应器模型；2-分发者模型（Dispatcher）；3-通
 #### 3）主从Reactor多线程
 
 ![image-20230401080503629](images/image-20230401080503629.png)
+
+![3413040a997a4964bc5b1b16a37efa9b](images/3413040a997a4964bc5b1b16a37efa9b.png)
 
 **方案说明：**
 
@@ -728,3 +738,14 @@ Netty模型纠正图：
 - 处理任务队列的任务，即 runAllTasks
 
 8） 每一个 Worker Group 下的 NioEventLoop 处理业务时，会使用 Pipeline（管道），Pipeline 中包含了 channel，即通过 Pipeline 可以获取到对应通道，管道中维护了很多的处理器。
+
+#### 任务队列中的Task有3种典型使用场景
+
+1）用户程序自定义的普通任务
+
+2）用户自定义定时任务
+
+3） 非当前 Reactor 线程调用 Channel 的各种方法
+
+
+
