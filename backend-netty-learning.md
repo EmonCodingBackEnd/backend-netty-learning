@@ -741,7 +741,7 @@ Netty模型纠正图：
 
 8） 每一个 Worker Group 下的 NioEventLoop 处理业务时，会使用 Pipeline（管道），Pipeline 中包含了 channel，即通过 Pipeline 可以获取到对应通道，管道中维护了很多的处理器。
 
-#### 任务队列中的Task有3种典型使用场景
+**任务队列中的Task有3种典型使用场景：**
 
 1）用户程序自定义的普通任务
 
@@ -749,5 +749,46 @@ Netty模型纠正图：
 
 3） 非当前 Reactor 线程调用 Channel 的各种方法
 
+**方案再说明：**
 
+1）Netty抽象出两组线程池，BossGroup 专门负责接收客户端连接，WorkerGroup 专门负责网络读写操作；
 
+2）NioEventLoop 表示一个不断循环执行处理任务的线程，每个 NioEventLoop 都有一个 selector，用于监听绑定在其上的 socket 网络通道；
+
+3）NioEventLoop 内部采用串行化设计，从消息的读取=>解码=>处理=>编码=>发送，始终由IO线程 NioEventLoop 负责。
+
+- NioEventLoopGroup 下包含多个 NioEventLoop；
+- 每个 NioEventLoop 中包含有一个 Selector，一个 taskQueue
+- 每个 NioEventLoop 的 Selector 上可以注册监听多个 NioChannel
+- 每个 NioChannel 只会绑定在唯一的 NioEventLoop 上
+- 每个 NioChannel 都绑定有一个自己的 ChannelPipeline
+
+### 异步模型
+
+**基本介绍：**
+
+1）异步的概念和同步相对。当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的组件在完成后，通过状态、通知和回调来通知调用者；
+
+2）Netty 中的I/O操作是异步的，包括 Bind、Write、Connect 等操作会简单的返回一个 ChannelFuture；
+
+3）调用者并不能立刻获得结果，而是通过 FutureListener 机制，用户可以方便的主动获取或者通过通知机制获得 I/O 操作结果；
+
+4）Netty的异步模型是建立在 future 和 callback 之上的。callback 就是回调。重点说 Future，它的核心思想是：假设一个方法 func，计算过程可能非常耗时，等待 funce 返回显然不合适。那么可以在调用 func 的时候，立马返回一个 Future，后续可以通过 Future去监控方法 func 的处理过程（即：Future-Listener 机制）
+
+**Future说明：**
+
+1）表示异步的执行结果，可以通过它提供的方法来检测执行是否完成，比如检索计算等等；
+
+2）ChannelFuture 是一个接口，我们可以添加监听器，当监听的事件发生时，就会通知到监听器。
+
+**Future-Listener机制：**
+
+1）当Future对象刚刚创建时，处于非完成状态，调用者可以通过返回的 ChannelFuture 来获取操作执行的状态，注册监听函数来执行完成后的操作；
+
+2）常见有如下操作：
+
+- 通过 isDone 方法来判断当前操作是否完成；
+- 通过 isSuccess 方法来判断已完成的当前操作是否成功；
+- 通过 getCause 方法来获取已完成的当前操作失败的原因；
+- 通过 isCancelled 方法来判断已完成的当前操作是否被取消；
+- 通过 addListener 方法来注册监听器，当操作已完成 （isDone 方法返回完成），将会通知指定的监听器；如果 Future 对象已完成，则通知指定的监听器。
