@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR/?p=50&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR?p=56&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
