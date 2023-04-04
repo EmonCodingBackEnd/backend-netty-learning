@@ -763,7 +763,7 @@ Netty模型纠正图：
 - 每个 NioChannel 只会绑定在唯一的 NioEventLoop 上
 - 每个 NioChannel 都绑定有一个自己的 ChannelPipeline
 
-### 异步模型
+#### 异步模型
 
 **基本介绍：**
 
@@ -792,3 +792,39 @@ Netty模型纠正图：
 - 通过 getCause 方法来获取已完成的当前操作失败的原因；
 - 通过 isCancelled 方法来判断已完成的当前操作是否被取消；
 - 通过 addListener 方法来注册监听器，当操作已完成 （isDone 方法返回完成），将会通知指定的监听器；如果 Future 对象已完成，则通知指定的监听器。
+
+### Netty组件概念
+
+#### Bootstrap与ServerBootstrap
+
+1）Bootstrap 意思是引导，一个 Netty 应用通常由 Bootstrap 开始，主要作用是配置整个 Netty 程序，串联各个组件，Netty 中 Bootstrap 类是客户端程序的启动引导类，ServerBootstrap 是服务端启动引导类。
+
+2）常见的方法有
+
+```java
+// 该方法用于服务器端，用来设置两个 EventLoop
+public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup)
+// 该方法用来设置一个服务器端的通道实现，或者一个客户端的通道实现
+public B channel(Class<? extends C> channelClass)
+// 用来给 ServerChannel 添加配置
+public <T> B option(ChannelOption<T> option, T value)
+// 服务器端用来给接收到的通道添加配置
+public <T> ServerBootstrap childOption(ChannelOption<T> childOption, T value)
+// 服务器端用来设置 BossGroup 的处理类
+public B handler(ChannelHandler handler) 
+// 服务器端用来设置 workerGroup 的业务处理类（自定义的handler）
+public ServerBootstrap childHandler(ChannelHandler childHandler)
+// 该方法用于服务器端，用来设置占用的端口号
+public ChannelFuture bind()
+// --------------------------------------------------
+// 该方法用于客户端，用来设置一个 EventLoop
+public B group(EventLoopGroup group)
+// 该方法用于客户端，用来连接服务器
+public ChannelFuture connect()
+```
+
+#### Future与ChannelFuture
+
+1）Netty中所有的IO操作都是异步的，不能立刻得到消息是否被正确处理。但是可以过一会等它执行完成或者直接注册一个监听，具体的实现就是通过Future和ChannelFuture，他们可以注册一个监听，当操作执行成功或者失败时，监听会自动触发注册的监听事件；
+
+2）

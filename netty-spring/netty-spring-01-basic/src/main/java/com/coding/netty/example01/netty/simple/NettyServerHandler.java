@@ -96,6 +96,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         System.out.println("go on......");
     }
 
+    // 定时3秒后，执行业务逻辑；总时间 3+5 = 8s
     private void scheduleTask(ChannelHandlerContext ctx) {
         ctx.channel().eventLoop().schedule(() -> {
             try {
@@ -104,7 +105,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                 e.printStackTrace();
             }
             ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端~喵4", CharsetUtil.UTF_8));
-        }, 5, TimeUnit.SECONDS);
+        }, 3, TimeUnit.SECONDS);
         System.out.println("go on......");
     }
 
