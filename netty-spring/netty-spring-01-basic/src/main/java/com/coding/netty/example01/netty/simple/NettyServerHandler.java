@@ -30,7 +30,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // shortTask(ctx, (ByteBuf)msg);
+        shortTask(ctx, (ByteBuf)msg);
 
         // 比如这里我们有一个非常耗时的业务 -> 异步执行 -> 提交该 channel 对应的 NioEventLoop 的 taskQueue中
         // longTask1(ctx);
@@ -38,19 +38,19 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         // longTask3(ctx);
 
         // 用户自定义定时任务 -> 该任务是提交到 scheduleTaskQueue 中
-        scheduleTask(ctx);
+        // scheduleTask(ctx);
 
         super.channelRead(ctx, msg);
     }
 
     private void shortTask(ChannelHandlerContext ctx, ByteBuf msg) {
-        log.info("服务器读取线程");
+        log.info("服务器读取线程，channel={}", ctx.channel());
         System.out.println("server ctx=" + ctx);
         System.out.println("看看 channel 和 pipeline 的关系");
         Channel channel = ctx.channel();
         ChannelPipeline pipeline = ctx.pipeline(); // 本质是一个双向链表，出站入站
 
-        // 将 msg 转成一个 ByteBuf，注意不是 NIO 的 ByteBuffer
+        // 将 msg 转成一个 ByteBuf，注意不是 NIO 的 ByteBuf
         ByteBuf byteBuf = msg;
         System.out.println("客户端发送的消息是：" + byteBuf.toString(CharsetUtil.UTF_8));
         System.out.println("客户端地址：" + ctx.channel().remoteAddress());

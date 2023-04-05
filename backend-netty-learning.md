@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR?p=56&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR/?p=58&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -827,4 +827,178 @@ public ChannelFuture connect()
 
 1）Netty中所有的IO操作都是异步的，不能立刻得到消息是否被正确处理。但是可以过一会等它执行完成或者直接注册一个监听，具体的实现就是通过Future和ChannelFuture，他们可以注册一个监听，当操作执行成功或者失败时，监听会自动触发注册的监听事件；
 
-2）
+2）常用的方法有
+
+```java
+// 返回当前正在进行IO操作的通道
+Channel channel();
+// 等待异步操作执行完毕
+ChannelFuture sync()
+```
+
+#### Channel
+
+io.netty.channel.Channel
+
+1）Netty 网络通信的组件，能够用于执行网络 I/O 操作；
+
+2）通过 Channel 可获得当前网络连接的通道的状态；
+
+3）通过 Channel 可获得网络连接的配置参数（例如接收缓冲区大小）；
+
+4）Channel 提供异步的网络 I/O 操作（如建立连接、读写、绑定端口），异步调用意味着任何 I/O 调用都将立即返回，并且不保证在调用结束时所请求的I/O操作已完成；
+
+5）调用立即返回一个 ChannelFuture 实例，通过注册监听器到 ChannelFuture 上，可以I/O操作成功、失败或取消时回调通知调用方；
+
+6）支持关联 I/O 操作与对应的处理程序
+
+7）不同协议、不同的阻塞类型的连接都有不同的 Channel 类型与之对应，常用的 Channel 类型：
+
+- NioSocketChannel，异步的客户端 TCP Socket 连接；
+- NIOServerSocketChannel，异步的服务器端 Tcp Socket 连接；
+- NioDatagramChannel，异步的 UDP 连接；
+- NioSctpChannel，异步的客户端 Sctp 连接；
+- NioSctpServerChannel，异步的 Sctp 服务器端连接，这些通道涵盖了 UDP 和 TCP 网络 I/O以及文件 I/O。
+
+#### Selector
+
+1）Netty 基于 Selector 对象实现 I/O 多路复用，通过 Selector 一个线程可以监听多个连接的 Channel 事件；
+
+2）当向一个 Selector 中注册 Channel 后，Selector 内部的机制就可以自动不断地查询 （Select） 这些注册的 Channel 是否有已就绪的 I/O 事件（例如可读、可写、网络连接完成等），这样程序就可以很简单地使用一个线程高效地管理多个 Channel 了。
+
+#### ChannelHandler 及其实现类
+
+1）ChannelHandler 是一个接口，处理 I/O 事件或拦截 I/O 操作，并将其转发到其 ChannelPipeline（业务处理链）中的下一个处理程序；
+
+2）ChannelHandler 本身并没有提供很多方法，因为这个接口有许多的方法需要实现，方便使用期间，可以继承它的子类；
+
+3）ChannelHandler 及其实现类一览图
+
+![image-20230404125736752](images/image-20230404125736752.png)
+
+4）我们经常需要自定义一个 Handler 类去继承 ChannelInBoundHandlerAdapter，然后通过重写相应方法实现业务逻辑，我们接下来看看一般都需要重写哪些方法；
+
+ChannelInboundHandlerAdapter
+
+```java
+// 2.通道注册事件
+public void channelRegistered(ChannelHandlerContext ctx)
+// 7.通道注销事件
+public void channelUnregistered(ChannelHandlerContext ctx)
+// 3.通道就绪事件
+public void channelActive(ChannelHandlerContext ctx)
+// 6.通道断开时触发
+public void channelInactive(ChannelHandlerContext ctx)
+// 4.通道读取数据事件
+public void channelRead(ChannelHandlerContext ctx, Object msg)
+// 5.数据读取完毕事件
+public void channelReadComplete(ChannelHandlerContext ctx)
+// 通道发生异常事件
+public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+// 1.Handler 被加入 Pipeline 时触发（仅仅触发一次）
+public void handlerAdded(ChannelHandlerContext ctx)
+// 8.handler 被从 Pipeline 移除时触发
+public void handlerRemoved(ChannelHandlerContext ctx)
+```
+
+总结：人为的关闭通道或者其它因素（比如：网络故障等），则会触发 channelInactive、channelUnregistered、handlerRemoved 的执行。
+
+#### Pipeline 和 ChannelPipeline
+
+**ChannelPipeline是一个重点：**
+
+1）ChannelPipeline 是一个 Handler 的集合，它负责处理和拦截 inbound 或者 outbound 的事件和操作，相当于一个贯穿 Netty 的链。（也可以这样理解： ChannelPipeline 是保存 ChannelHandler 的 List，用于处理或拦截 Channel 的入站事件和出站操作）
+
+2） ChannelPipeline 实现了一种高级形式的拦截过滤器模式，使用户可以完全控制事件的处理方式，以及 Channel 中的各个 ChannelHandler 如何相互交互；
+
+3）在 Netty 中每个 Channel 都有且仅有一个 ChannelPipeline 与之对应，它们的组成关系如下：
+
+![image-20230404132522835](images/image-20230404132522835.png)
+
+- 一个 Channel 包含了一个 ChannelPipeline，而 ChannelPipeline 中又维护了一个由 ChannelHandlerContext 组成的双向链表，并且每个 ChannelHandlerContext 中又关联着一个 ChannelHandler；
+- 入站事件和出站事件在一个双向链表中，**入站事件会从链表 head 往后传递到最后一个入站的 handler，出站事件会总链表的 tail 往前传递到最前一个出站的 handler**，两种类型的 handler 互不干扰。
+
+4）常用方法
+
+- ChannelPipeline addFirst(ChannelHandler...handlers)，把一个业务处理类 handler 添加到链中的第一个位置；
+- ChannelPipeline addLast(ChannelHandler...handlers)，把一个业务处理类 handler 添加到链中的最后一个位置；
+
+##### 出站和入站
+
+Netty 是通过由多个 Handler 组成的链处理所有通信的，多个 Handler 组成的链即 Pipeline。
+
+Handler 本身是具有方向的，通常认为**以 读 为处理重点的是入站，以 写 为处理重点的是出站**。
+
+**如何理解出站和入站？**
+
+- 概括的讲
+  - 从当前程序端发出的是出站，通常需要写；
+  - 进入当前程序端的是入站，通常需要读。
+- 出站、入站是一个相对的概念，随着程序端的变化而不同
+  - 在 Client 角度，Client => Server 是 出站
+  - 在 Server 角度，Server => Client 是 出站
+
+#### ChannelHandlerContext
+
+1）保存 Channel 相关的所有上下文信息，同时关联一个 ChannelHandler 对象；
+
+2）即 ChannelHandlerContext 中包含一个具体的事件处理器 ChannelHandler，同时 ChannelHandlerContext 中也绑定了对应的 pipeline 和 channel 的信息，方便对 ChannelHandler 进行调用；
+
+3）常用方法
+
+- ChannelFuture close()，关闭通道
+- ChannelHandlerContext flush()，刷新
+- ChannelFuture writeAndFlush(Object msg)，将数据写到 ChannelPipeline 中当前 ChannelHandler 的下一个 ChannelHandler 开始处理（出站）
+
+
+
+#### ChannelOption
+
+1）Netty 在创建 Channel 实例后，一般都需要设置 ChannelOption 参数。
+
+2）ChannelOption 参数如下：
+
+- ChannelOption.SO_BACKLOG
+
+> 对应 TCP/IP 协议 listen 函数中的 backlog 参数，用来初始化服务器可连接队列大小。服务器处理客户端连接请求是顺序处理的，所以同一时间只能处理一个客户端连接。多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog 参数指定了队列的大小。
+
+- ChannelOption.SO_KEEPALIVE
+
+> 一直保持连接的活动状态
+
+
+
+#### EventLoopGroup 和其实现类 NioEventLoopGroup
+
+1）EventLoopGroup 是一组 EventLoop 的抽象，Netty 为了更好的利用多核 CPU 资源，一般会有多个 EventLoop 同时工作，每个 EventLoop 维护着一个 Selector 实例；
+
+2）EventLoopGroup 提供 next 接口，可以从组里面按照一定规则获取其中一个 EventLoop 来处理任务。在 Netty 服务器端编程中，我们一般都需要提供两个 EventLoopGroup，例如：bossEventLoopGroup 和 workerEventLoopGroup；
+
+3）通常一个服务端即一个 ServerSocketChannel 对应一个 Selector 和一个 EventLoop 线程。bossEventLoopGroup 负责接收客户端的连接并将 SocketChannel 交给 workerEventLoopGroup 来进行 IO 处理，如下图：
+
+![image-20230405110735089](images/image-20230405110735089.png)
+
+
+
+- BossEventLoopGroup 通常是一个单线程的 EventLoop，EventLoop 维护着一个注册了 ServerSocketChannel 的 Selector 实例，BossEventLoop 不断轮询 Selector 将连接事件分离出来；
+- 通常是 OP_ACCEPT 事件，然后将接收到的 SocketChannel 交给 workerEventLoopGroup ；
+- workerEventLoopGroup 会由 next 选择其中一个 EventLoop 来讲这个 SocketChannel 注册到其维护的 Selector 并对其后续的 I/O 事件进行处理。
+
+4）常用方法
+
+- public NioEventLoopGroup()，构造方法
+- public Future<?> shutdownGracefully()，断开连接，关闭线程
+
+#### Unpooled类
+
+1）Netty 提供一个专门用来操作缓冲区（即 Netty 的数据容器）的工具类
+
+2）常用方法如下所示
+
+```java
+// 通过给定的数据和字符编码返回一个 ByteBuf 对象（类似于 NIO 中的 ByteBuffer 但有区别）
+public static ByteBuf copiedBuffer(CharSequence string, Charset charset)
+```
+
+
+

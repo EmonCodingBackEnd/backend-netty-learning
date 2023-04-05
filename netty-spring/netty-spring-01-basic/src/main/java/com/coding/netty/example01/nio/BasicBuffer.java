@@ -4,7 +4,7 @@ import java.nio.IntBuffer;
 
 public class BasicBuffer {
     public static void main(String[] args) {
-        // 创建一个Buffer，大小位5，即可以存放5个int
+        // 创建一个Buffer，大小位5，即可以存放 5 个int
         IntBuffer intBuffer = IntBuffer.allocate(5);
         // 向buffer存放数据
         for (int i = 0; i < intBuffer.capacity(); i++) {
