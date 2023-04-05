@@ -25,6 +25,7 @@ public class ChatRoomClient {
         NioEventLoopGroup eventExecutors = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();
+
         try {
             bootstrap.group(eventExecutors).channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
@@ -42,8 +43,8 @@ public class ChatRoomClient {
                 });
 
             ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-
             System.out.println("netty 客户端启动:" + "----------" + channelFuture.channel().localAddress() + "----------");
+
             // 客户端需要输入信息，创建一个扫描器
             Scanner scanner = new Scanner(System.in);
             while (scanner.hasNextLine()) {

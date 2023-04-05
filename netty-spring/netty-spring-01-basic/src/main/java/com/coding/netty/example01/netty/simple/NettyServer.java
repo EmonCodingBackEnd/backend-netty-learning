@@ -40,10 +40,11 @@ public class NettyServer {
                         ch.pipeline().addLast(new NettyServerHandler());
                     }
                 }); // 给我们的 WorkerGroup 的 EventLoop 对应的管道设置处理器
-            System.out.println("......服务器 is ready......");
 
             // 绑定一个端口并且同步，生成了一个 ChannelFuture 对象
             ChannelFuture channelFuture = bootstrap.bind(6668).sync();
+            System.out.println("......服务器 is ready......");
+
             // 注册监听器，监控我们关心的事件
             channelFuture.addListener(new ChannelFutureListener() {
                 @Override

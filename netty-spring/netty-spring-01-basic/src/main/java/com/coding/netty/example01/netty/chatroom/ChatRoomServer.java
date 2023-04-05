@@ -34,6 +34,7 @@ public class ChatRoomServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         ServerBootstrap bootstrap = new ServerBootstrap();
+
         try {
             bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -52,8 +53,8 @@ public class ChatRoomServer {
                 });
 
             ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            System.out.println("netty 服务器启动在端口：" + port);
 
-            System.out.println("netty 服务器启动");
             // 监听关闭事件
             channelFuture.channel().closeFuture().sync();
         } finally {

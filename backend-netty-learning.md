@@ -1000,5 +1000,7 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
 public static ByteBuf copiedBuffer(CharSequence string, Charset charset)
 ```
 
+### Netty 心跳检测机制
+
 
 
