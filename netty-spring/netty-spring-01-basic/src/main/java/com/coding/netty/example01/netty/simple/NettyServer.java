@@ -43,7 +43,7 @@ public class NettyServer {
 
             // 绑定一个端口并且同步，生成了一个 ChannelFuture 对象
             ChannelFuture channelFuture = bootstrap.bind(6668).sync();
-            System.out.println("......服务器 is ready......");
+            System.out.println("netty 服务器启动在端口：" + 6668);
 
             // 注册监听器，监控我们关心的事件
             channelFuture.addListener(new ChannelFutureListener() {

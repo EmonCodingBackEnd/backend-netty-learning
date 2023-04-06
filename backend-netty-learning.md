@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR?p=70&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR/?p=77&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -793,9 +793,9 @@ Netty模型纠正图：
 - 通过 isCancelled 方法来判断已完成的当前操作是否被取消；
 - 通过 addListener 方法来注册监听器，当操作已完成 （isDone 方法返回完成），将会通知指定的监听器；如果 Future 对象已完成，则通知指定的监听器。
 
-### Netty组件概念
+## Netty组件概念
 
-#### Bootstrap与ServerBootstrap
+### Bootstrap与ServerBootstrap
 
 1）Bootstrap 意思是引导，一个 Netty 应用通常由 Bootstrap 开始，主要作用是配置整个 Netty 程序，串联各个组件，Netty 中 Bootstrap 类是客户端程序的启动引导类，ServerBootstrap 是服务端启动引导类。
 
@@ -823,7 +823,7 @@ public B group(EventLoopGroup group)
 public ChannelFuture connect()
 ```
 
-#### Future与ChannelFuture
+### Future与ChannelFuture
 
 1）Netty中所有的IO操作都是异步的，不能立刻得到消息是否被正确处理。但是可以过一会等它执行完成或者直接注册一个监听，具体的实现就是通过Future和ChannelFuture，他们可以注册一个监听，当操作执行成功或者失败时，监听会自动触发注册的监听事件；
 
@@ -836,7 +836,7 @@ Channel channel();
 ChannelFuture sync()
 ```
 
-#### Channel
+### Channel
 
 io.netty.channel.Channel
 
@@ -860,13 +860,13 @@ io.netty.channel.Channel
 - NioSctpChannel，异步的客户端 Sctp 连接；
 - NioSctpServerChannel，异步的 Sctp 服务器端连接，这些通道涵盖了 UDP 和 TCP 网络 I/O以及文件 I/O。
 
-#### Selector
+### Selector
 
 1）Netty 基于 Selector 对象实现 I/O 多路复用，通过 Selector 一个线程可以监听多个连接的 Channel 事件；
 
 2）当向一个 Selector 中注册 Channel 后，Selector 内部的机制就可以自动不断地查询 （Select） 这些注册的 Channel 是否有已就绪的 I/O 事件（例如可读、可写、网络连接完成等），这样程序就可以很简单地使用一个线程高效地管理多个 Channel 了。
 
-#### ChannelHandler 及其实现类
+### ChannelHandler 及其实现类
 
 1）ChannelHandler 是一个接口，处理 I/O 事件或拦截 I/O 操作，并将其转发到其 ChannelPipeline（业务处理链）中的下一个处理程序；
 
@@ -903,7 +903,7 @@ public void handlerRemoved(ChannelHandlerContext ctx)
 
 总结：人为的关闭通道或者其它因素（比如：网络故障等），则会触发 channelInactive、channelUnregistered、handlerRemoved 的执行。
 
-#### Pipeline 和 ChannelPipeline
+### Pipeline 和 ChannelPipeline
 
 **ChannelPipeline是一个重点：**
 
@@ -923,7 +923,7 @@ public void handlerRemoved(ChannelHandlerContext ctx)
 - ChannelPipeline addFirst(ChannelHandler...handlers)，把一个业务处理类 handler 添加到链中的第一个位置；
 - ChannelPipeline addLast(ChannelHandler...handlers)，把一个业务处理类 handler 添加到链中的最后一个位置；
 
-##### 出站和入站
+#### 出站和入站
 
 Netty 是通过由多个 Handler 组成的链处理所有通信的，多个 Handler 组成的链即 Pipeline。
 
@@ -938,7 +938,7 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
   - 在 Client 角度，Client => Server 是 出站
   - 在 Server 角度，Server => Client 是 出站
 
-#### ChannelHandlerContext
+### ChannelHandlerContext
 
 1）保存 Channel 相关的所有上下文信息，同时关联一个 ChannelHandler 对象；
 
@@ -950,9 +950,7 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
 - ChannelHandlerContext flush()，刷新
 - ChannelFuture writeAndFlush(Object msg)，将数据写到 ChannelPipeline 中当前 ChannelHandler 的下一个 ChannelHandler 开始处理（出站）
 
-
-
-#### ChannelOption
+### ChannelOption
 
 1）Netty 在创建 Channel 实例后，一般都需要设置 ChannelOption 参数。
 
@@ -966,9 +964,7 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
 
 > 一直保持连接的活动状态
 
-
-
-#### EventLoopGroup 和其实现类 NioEventLoopGroup
+### EventLoopGroup 和其实现类 NioEventLoopGroup
 
 1）EventLoopGroup 是一组 EventLoop 的抽象，Netty 为了更好的利用多核 CPU 资源，一般会有多个 EventLoop 同时工作，每个 EventLoop 维护着一个 Selector 实例；
 
@@ -989,7 +985,7 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
 - public NioEventLoopGroup()，构造方法
 - public Future<?> shutdownGracefully()，断开连接，关闭线程
 
-#### Unpooled类
+### Unpooled类
 
 1）Netty 提供一个专门用来操作缓冲区（即 Netty 的数据容器）的工具类
 
@@ -999,6 +995,63 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
 // 通过给定的数据和字符编码返回一个 ByteBuf 对象（类似于 NIO 中的 ByteBuffer 但有区别）
 public static ByteBuf copiedBuffer(CharSequence string, Charset charset)
 ```
+
+## 编码和解码的基本介绍
+
+1）编写网络应用程序时，因为数据在网络中传输的都是二进制字节码数据，在发送数据时就需要编码，接收数据时就需要解码；
+
+2）codec（编解码器）的组成部分有两个：decoder（解码器）和encoder（编码器）。
+
+encoder负责把业务数据转换成字节码数据，decoder负责把字节码数据转换成业务数据。
+
+### Netty 本身的编码解码的机制和问题分析
+
+1）Netty 自身提供了一些 codec（编解码器）
+
+2）Netty 提供的编码器
+
+- StringEncoder，对字符串数据进行编码
+- ObjectEncoder，对 Java 对象进行编码
+- ......
+
+3）Netty 提供的解码器
+
+- StringDecoder，对字符串数据进行解码
+- ObjectDecoder，对 Java 对象进行解码
+
+4）Netty 本身自带的 ObjectDecoder 和 ObjectEncoder 可以用来实现 POJO 对象或各种业务对象的编码和解码，底层使用的仍是 Java 序列化技术，而 Java 序列化技术本身效率就不高，存在如下问题：
+
+- 无法跨语言
+- 序列化后的体积太大，是二进制编码的5倍多
+- 序列化性能太低
+
+引出新的解决方案[Google 的 Protobuf]
+
+### Protobuf
+
+1）Protobuf 是 Google 发布的开源项目，全称 Google Protocol Buffers，是一种轻便高效的结构化数据存储格式，开源用于结构化数据串行化，或者说序列化。它很适合做数据存储或 **RPC[远程过程调用 remote procedure call] 数据交换格式**。
+
+目前很多公司 http+json => tcp+protobuf 提高性能
+
+2）参考文档：
+
+https://developers.google.com/protocol-buffers/docs/proto 语言指南
+
+3）Protobuf 是以 message 的方式来管理数据的
+
+4）支持跨平台、跨语言，即[客户端和服务器端开源是不通的语言编写的]（支持目前绝大多数语言，例如 C++、C#、Java、Python等）
+
+5）高性能、高可靠性
+
+6）使用 protobuf 编译器能自动生成代码，Protobuf 是将类的定义使用 .proto 文件进行描述。说明，在 idea 中编写 .proto 文件时，会提示是否下载 .protot 编写插件，可以让语法高亮。
+
+7）然后通过 protoc.exe 编译器根据 .proto 自动生成 .java 文件
+
+8）protobuf 使用示意图
+
+
+
+
 
 
 
