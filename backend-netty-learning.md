@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR?p=65&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR?p=70&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -999,8 +999,6 @@ Handler 本身是具有方向的，通常认为**以 读 为处理重点的是�
 // 通过给定的数据和字符编码返回一个 ByteBuf 对象（类似于 NIO 中的 ByteBuffer 但有区别）
 public static ByteBuf copiedBuffer(CharSequence string, Charset charset)
 ```
-
-### Netty 心跳检测机制
 
 
 
