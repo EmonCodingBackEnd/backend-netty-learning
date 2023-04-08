@@ -12,7 +12,7 @@ https://www.bilibili.com/video/BV1DJ411m7NR/?p=79&spm_id_from=pageDriver&vd_sour
 
 https://www.bilibili.com/video/BV1DJ411m7NR?p=49&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
-JVM：
+JVM：【高】
 
 https://www.bilibili.com/video/BV1PJ411n7xZ/?spm_id_from=333.788.recommend_more_video.2&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
@@ -20,7 +20,7 @@ Nginx：
 
 https://www.bilibili.com/video/BV1yS4y1N76R/?spm_id_from=333.788.recommend_more_video.2
 
-MySQL：https://www.bilibili.com/video/BV1iq4y1u7vj/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+MySQL：https://www.bilibili.com/video/BV1iq4y1u7vj/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1【高】
 
 Spring：
 
@@ -923,6 +923,10 @@ public void handlerRemoved(ChannelHandlerContext ctx)
 - ChannelPipeline addFirst(ChannelHandler...handlers)，把一个业务处理类 handler 添加到链中的第一个位置；
 - ChannelPipeline addLast(ChannelHandler...handlers)，把一个业务处理类 handler 添加到链中的最后一个位置；
 
+![image-20230408183919448](images/image-20230408183919448.png)
+
+<center><font style="color:red;">截图来自于 ChannelPipeline 的doc</font></center>
+
 #### 出站和入站
 
 Netty 是通过由多个 Handler 组成的链处理所有通信的，多个 Handler 组成的链即 Pipeline。
@@ -1054,6 +1058,13 @@ https://developers.google.com/protocol-buffers/docs/proto 语言指南
 1）当 Netty 发送或者接收一个消息的时候，就将会发生一次数据转换。入站消息会被解码：从字节转换为另一种格式（比如Java对象）；如果是出站消息，会被编码成字节。
 
 2）Netty 提供一系列实用的编解码器，他们都实现了 ChannelInboundHandler 或者 ChannelOutboundHandler 接口。在这些类中，channelRead 方法已经被重写了。以入站为例，对于每个从入站 Channel 读取的消息，这个方法会被调用。然后，它将调用由解码器所提供的 decode() 方法进行解码，并将已经解码的字节转发给 ChannelPipeline 中的下一个 ChannelInboundHandler。
+
+3）结论
+
+- 不论解码器 handler 还是编码器 handler 接收的消息类型必须与待处理的消息类型一致，否则该 handler 不会被执行；
+- 在解码器进行数据解码时，需要判断缓存区（ByteBuf）的数据是否足够，否则接收的结果会与预期不一致。
+
+![img](images/cee4cc7e162342649af0c22d9b69d7b3.png)
 
 
 
