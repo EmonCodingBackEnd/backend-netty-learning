@@ -1,4 +1,4 @@
-package com.coding.netty.example01.netty.codec.encoderanddecoder;
+package com.coding.netty.example01.netty.codec.encoderanddecoder02;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

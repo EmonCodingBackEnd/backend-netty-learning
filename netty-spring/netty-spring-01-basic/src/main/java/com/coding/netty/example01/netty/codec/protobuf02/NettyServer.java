@@ -23,8 +23,7 @@ public class NettyServer {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast("decoder", new ProtobufDecoder(StudentPOJO.Student.getDefaultInstance()));
-                        // pipeline.addLast(new NettyServerHandler());
-                        pipeline.addLast(new NettyServerHandler2());
+                        pipeline.addLast(new NettyServerHandler());
                     }
                 });
 

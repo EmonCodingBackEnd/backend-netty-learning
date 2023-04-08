@@ -7,7 +7,7 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class NettyServerHandler2 extends SimpleChannelInboundHandler<StudentPOJO.Student> {
+public class NettyServerHandler extends SimpleChannelInboundHandler<StudentPOJO.Student> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, StudentPOJO.Student student) throws Exception {
