@@ -1,4 +1,4 @@
-package com.coding.netty.example01.netty.codec2;
+package com.coding.netty.example01.netty.codec.protobuf03;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;

@@ -1,17 +1,18 @@
-package com.coding.netty.example01.netty.codec;
+package com.coding.netty.example01.netty.codec.protobuf01;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class NettyServerHandler2 extends SimpleChannelInboundHandler<StudentPOJO.Student> {
+public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, StudentPOJO.Student student) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // 读取从客户端发送的 StudentPOJO.Student
+        StudentPOJO.Student student = (StudentPOJO.Student)msg;
         System.out.println("客户端发送的数据 id=" + student.getId() + " 名字=" + student.getName());
     }
 

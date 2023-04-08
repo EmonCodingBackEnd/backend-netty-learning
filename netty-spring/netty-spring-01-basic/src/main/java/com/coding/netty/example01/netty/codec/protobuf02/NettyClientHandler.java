@@ -1,4 +1,4 @@
-package com.coding.netty.example01.netty.codec;
+package com.coding.netty.example01.netty.codec.protobuf02;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

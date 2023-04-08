@@ -1,11 +1,13 @@
-package com.coding.netty.example01.netty.http;
+package com.coding.netty.example01.netty.codec.encoderanddecoder;
+
+import com.coding.netty.example01.netty.http.NettyHttpServerHandler;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 
-public class TestServerInitializer extends ChannelInitializer<SocketChannel> {
+public class NettyServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         // 向管道加入处理器
@@ -16,7 +18,7 @@ public class TestServerInitializer extends ChannelInitializer<SocketChannel> {
         // 1.HttpServerCodec 是 Netty 提供的编码、解码器
         pipeline.addLast("MyHttpServerCoder", new HttpServerCodec());
         // 2.增加一个自定义的 handler
-        pipeline.addLast("MyTestHttpServerHandler", new TestHttpServerHandler());
+        pipeline.addLast("MyTestHttpServerHandler", new NettyHttpServerHandler());
 
         System.out.println("ok~~~~~");
     }

@@ -23,7 +23,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * 3）实现当服务器超过 7 秒没有读或者写操作时，就提示读写空闲
  */
 // @formatter:on
-public class MyServer {
+public class NettyServer {
     public static void main(String[] args) throws InterruptedException {
         // 创建两个线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -49,7 +49,7 @@ public class MyServer {
                          */
                         pipeline.addLast(new IdleStateHandler(13, 5, 2, TimeUnit.SECONDS));
                         // 加入一个对空闲检测进一步处理的 handler（自定义）
-                        pipeline.addLast(new MyServerHandler());
+                        pipeline.addLast(new NettyServerHandler());
                     }
                 });
 

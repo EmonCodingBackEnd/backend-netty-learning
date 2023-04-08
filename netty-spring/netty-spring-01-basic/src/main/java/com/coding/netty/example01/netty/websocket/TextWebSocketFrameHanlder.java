@@ -9,7 +9,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 /**
  * TextWebSocketFrame 表示文本帧（frame）
  */
-public class MyTextWebSocketFrameHanlder extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class TextWebSocketFrameHanlder extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     // Handler 被加入 Pipeline 时触发（仅仅触发一次）
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {

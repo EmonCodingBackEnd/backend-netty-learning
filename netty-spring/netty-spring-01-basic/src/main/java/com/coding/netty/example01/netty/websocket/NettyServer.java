@@ -26,7 +26,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
  * 4）客户端浏览器和服务器端会相互感知，比如服务器关闭了，浏览器会感知，同样浏览器关闭了，服务器会感知。
  */
 // @formatter:on
-public class MyServer {
+public class NettyServer {
     public static void main(String[] args) throws InterruptedException {
         // 创建两个线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -62,7 +62,7 @@ public class MyServer {
                          */
                         pipeline.addLast(new WebSocketServerProtocolHandler("/hello"));
                         // 自定义的 handler，处理业务逻辑
-                        pipeline.addLast(new MyTextWebSocketFrameHanlder());
+                        pipeline.addLast(new TextWebSocketFrameHanlder());
                     }
                 });
 
