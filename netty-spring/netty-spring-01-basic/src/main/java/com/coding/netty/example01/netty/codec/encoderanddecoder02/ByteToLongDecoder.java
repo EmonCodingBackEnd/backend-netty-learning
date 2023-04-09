@@ -10,6 +10,10 @@ import io.netty.handler.codec.ReplayingDecoder;
 /**
  * ReplayingDecoder 扩展了 ByteToMessageDecoder 类，使用这个类，我们不必调用 readableBytes() 方法。
  * 参数 S 指定了用户状态管理的类型，其中 Void 代表不需要状态管理。
+ *
+ * ReplayingDecoder 使用方便，但也有局限性：
+ * 1、并非所有的 ByteBuf 操作都被支持，如果调用了一个不被支持的方法，将会抛出一个 UnsupportedOperationException。
+ * 2、ReplayingDecoder 在某些情况下可能稍慢于 ByteToMessageDecoder；例如：网络缓慢并且消息格式复杂时，消息会被拆成了多个碎片，速度变慢。
  */
 // @formatter:on
 public class ByteToLongDecoder extends ReplayingDecoder<Void> {

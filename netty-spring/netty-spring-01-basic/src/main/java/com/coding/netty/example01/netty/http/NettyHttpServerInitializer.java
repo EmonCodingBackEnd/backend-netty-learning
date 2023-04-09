@@ -5,6 +5,12 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 
+// @formatter:off
+/**
+ * 【重要】当一个 NettyClient 进来时，NettyServer 使用到的 NettyHttpServerInitializer 是同一个对象，
+ * 但由于 initChannel 每次都初始化，所以 pipeline.addLast 加入的其他 ChannelHandler 是新的实例。  
+ */
+// @formatter:on
 public class NettyHttpServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {

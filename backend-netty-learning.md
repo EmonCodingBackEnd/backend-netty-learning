@@ -6,7 +6,7 @@ Netty学习：
 
 Netty：
 
-https://www.bilibili.com/video/BV1DJ411m7NR/?p=79&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1DJ411m7NR?p=87&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 数据结构与算法：
 
@@ -39,6 +39,10 @@ https://www.bilibili.com/video/BV18E411x7eT/?vd_source=b850b3a29a70c8eb888ce7dff
 https://www.bilibili.com/read/cv5650633
 
 https://www.bilibili.com/video/BV1p84y1P7Z5/?p=4&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+
+B站尚硅谷沟通：
+
+https://message.bilibili.com/#/whisper/mid302417610
 
 在线支付：
 
@@ -1066,9 +1070,40 @@ https://developers.google.com/protocol-buffers/docs/proto 语言指南
 
 ![img](images/cee4cc7e162342649af0c22d9b69d7b3.png)
 
+#### Netty提供的其他编解码器
 
+**其他解码器：** ByteToMessageDecoder 的子类
 
+1）LineBasedFrameDecoder：这个类在 Netty 内部也有使用，它使用行尾控制字符（\n或者\r\n）作为分隔符来解析数据；
 
+2）DelimiterBasedFrameDecoder：使用自定义的特殊字符作为消息的分隔符；
 
+3）HttpObjectDecoder：一个 HTTP 数据的解码器；
 
+4）LengthFieldBasedFrameDecoder：通过指定长度来标识整包消息，这样就可以自动的处理粘包（zhān bāo）和拆包问题；
 
+5）ReplayingDecoder：扩展了 ByteToMessageDecoder 类，使用这个类，我们不必调用 readableBytes() 方法。
+
+**其他编码器：** MessageToByteEncoder 的子类
+
+## TCP 粘包（zhān bāo）和拆包及解决方案
+
+### TCP 粘包和拆包基本介绍
+
+1）TCP 是面向连接的，面向流的，提供高可靠性服务。收发两端（客户端和服务器端）都要有一一成对的socket，因此，发送端为了将多个发给接收端的包，更有效的发给对方，使用了优化方法（Nagle 算法），将多次间隔较小且数据量效的数据，合并成一个大的数据块，然后进行封包。这样做虽然提高了效率，但是接收端就难于分辨出完整的数据包了，因为**面向流的通信是无消息保护边界**的。
+
+2）由于 TCP 无消息保护边界，需要在接收端处理消息边界问题，也就是我们所说的粘包、拆包问题。
+
+3）TCP 粘包、拆包图解
+
+![image-20230408214216252](images/image-20230408214216252.png)
+
+假设客户端分别发送了两个数据包 D1 和 D2 给服务端，由于服务端第一次读取到的字节数是不确定的，故可能存在以下四种情况：
+
+1）服务端分两次读取到了两个独立的数据包，分别是 D1 和 D2，没有粘包和拆包；
+
+2）服务端一次接受到了两个数据包，D1 和 D2 粘合在一起，称之为 TCP 粘包；【粘包】
+
+3）服务端分两次读取到了数据包，第一次读取到了完整的 D1 包和 D2 包的部分内容 D2_1，第二次读取到了 D2 包的剩余内容 D2_2，这称之为 TCP 拆包；【拆包】
+
+4）服务端分两次读取到了数据包，第一次读取到了 D1 包的部分内容 D1_1，第二次读取到了 D1 包剩余的部分内容 D1_2 和完整的 D2 的包。【拆包】
