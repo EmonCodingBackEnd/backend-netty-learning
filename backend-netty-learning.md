@@ -30,12 +30,6 @@ SpringCloud:
 
 https://www.bilibili.com/video/BV18E411x7eT/?vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
-前端三件套：
-
-https://www.bilibili.com/read/cv5650633
-
-https://www.bilibili.com/video/BV1p84y1P7Z5/?p=4&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
-
 B站尚硅谷沟通：
 
 https://message.bilibili.com/#/whisper/mid302417610
