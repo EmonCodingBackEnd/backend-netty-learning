@@ -10,7 +10,7 @@ https://www.bilibili.com/video/BV1DJ411m7NR/?p=92&spm_id_from=pageDriver&vd_sour
 
 数据结构与算法：
 
-https://www.bilibili.com/video/BV1DJ411m7NR?p=49&spm_id_from=pageDriver&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
+https://www.bilibili.com/video/BV1E4411H73v/?spm_id_from=333.337.search-card.all.click&vd_source=b850b3a29a70c8eb888ce7dff776a5d1
 
 Nginx：
 
