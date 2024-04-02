@@ -17,6 +17,9 @@ public class NettyHttpServer {
                 .childHandler(new NettyHttpServerInitializer());
 
             ChannelFuture channelFuture = bootstrap.bind(6668).sync();
+            System.out.println("netty 服务器启动在端口：" + 6668);
+
+            // 监听关闭事件
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

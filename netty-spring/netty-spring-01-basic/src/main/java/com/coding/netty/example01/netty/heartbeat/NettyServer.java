@@ -18,9 +18,9 @@ import io.netty.handler.timeout.IdleStateHandler;
 /**
  * Netty 心跳检测机制
  * 案例要求：
- * 1）编写一个 Netty 心跳检测机制案例，当服务器超过 3 秒没有读取时，就提示读空闲
- * 2）当服务器超过 5 秒没有写操作时，就提示写空闲
- * 3）实现当服务器超过 7 秒没有读或者写操作时，就提示读写空闲
+ * 1）编写一个 Netty 心跳检测机制案例，当服务器超过 30 秒没有读取时，就提示读空闲
+ * 2）当服务器超过 50 秒没有写操作时，就提示写空闲
+ * 3）实现当服务器超过 10 秒没有读或者写操作时，就提示读写空闲
  */
 // @formatter:on
 public class NettyServer {
@@ -43,11 +43,11 @@ public class NettyServer {
                         1. IdleStateHandler 是 netty 提供的处理空闲状态的处理器
                         2. int readerIdleTimeSeconds: 表示多长时间没有读，就会发送一个心跳检测包检测是否连接
                         3. int writerIdleTimeSeconds: 表示多长时间没有写，就会发送一个心跳检测包检测是否连接
-                        4. int allIdleTimeSeconds: 表示多长时间没有读写，就会发送一个心跳检测包检测是否连接
-                        5. 当 IdleStateEvent 出发后，就会传递给管道的下一个 handler；通过调用（触发）下一个 handler 的 userEventTriggered，在该
+                        4. int allIdleTimeSeconds: 表示多长时间没有读或写，就会发送一个心跳检测包检测是否连接
+                        5. 当 IdleStateEvent 触发后，就会传递给管道的下一个 handler；通过调用（触发）下一个 handler 的 userEventTriggered，在该
                         方法中去处理
                          */
-                        pipeline.addLast(new IdleStateHandler(13, 5, 2, TimeUnit.SECONDS));
+                        pipeline.addLast(new IdleStateHandler(30, 50, 10, TimeUnit.SECONDS));
                         // 加入一个对空闲检测进一步处理的 handler（自定义）
                         pipeline.addLast(new NettyServerHandler());
                     }

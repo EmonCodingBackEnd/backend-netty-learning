@@ -13,7 +13,7 @@ import io.netty.util.CharsetUtil;
 /**
  * 说明
  * 1.SimpleChannelInBoundHandler 是 ChannelInBoundHandlerAdapter
- * 2.HttpObject 客户单和服务器端相关通讯的数据被封装成 HttpObject
+ * 2.HttpObject 客户端和服务器端相关通讯的数据被封装成 HttpObject
  */
 // @formatter:on
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {

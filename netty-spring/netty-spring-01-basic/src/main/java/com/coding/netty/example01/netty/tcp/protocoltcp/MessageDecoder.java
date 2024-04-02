@@ -9,7 +9,7 @@ import io.netty.handler.codec.ReplayingDecoder;
 public class MessageDecoder extends ReplayingDecoder<Void> {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        System.out.println("入站<==ByteToLongDecoder decoder 被调用");
+        System.out.println("入站<==MessageDecoder decoder 被调用");
         // 在 ReplayingDecoder 不需要判断数据是否足够读取，内部会进行处理判断
         // 需要将得到的二进制字节码 => MessageProtocol 数据包（对象）
         int len = in.readInt();

@@ -1,6 +1,6 @@
 /*
-1.下载 protobuf 的对应操作系统版本，比如 protoc-22.2-win64.zip
-https://github.com/protocolbuffers/protobuf/releases/tag/v22.2
+1.下载 protobuf 的对应操作系统版本，比如 protoc-22.5-win64.zip
+https://github.com/protocolbuffers/protobuf/releases/tag/v22.5
 2.解压后进入到 protoc-22.2-win64\bin 目录下
 3.拷贝 Student.proto 到上面目录下
 4.打开 cmd
