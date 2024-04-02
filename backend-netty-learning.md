@@ -345,7 +345,7 @@ public final SelectionKey register(Selector sel, int ops)
 
 ### 普通的IO
 
-我们以读取一个 本地磁盘文件的内容并通过网络发送为例，我们先要说说一个普通的IO操作是怎么样的。
+我们以读取一个本地磁盘文件的内容并通过网络发送为例，我们先要说说一个普通的IO操作是怎么样的。
 
 ![img](images/format-normal-webp.webp)
 
@@ -404,7 +404,7 @@ MMap除了在发送的时候有应用，在写入的时候也是有应用的，�
 
 如果能直接从内核缓冲区COPY到网卡缓冲区就好了。
 
-Linux内核2.1开始引入一个叫sendFile系统调用，在内核2.4一会的版本中，Linux内核对Socket缓冲区描述符做了优化，通过这次优化，sendFile系统调用可以在只复制Kernel Buffer的少量元信息的基础上，把数据直接从Kernel Buffer复制到网卡的Buffer中去。从而避免了从“内核缓冲区”拷贝到“Socket缓冲区”的这一次拷贝。
+Linux内核2.1开始引入一个叫sendFile系统调用，在内核2.4以后的版本中，Linux内核对Socket缓冲区描述符做了优化，通过这次优化，sendFile系统调用可以在只复制Kernel Buffer的少量元信息的基础上，把数据直接从Kernel Buffer复制到网卡的Buffer中去。从而避免了从“内核缓冲区”拷贝到“Socket缓冲区”的这一次拷贝。
 
 这个优化后的sendFile，我们称之为支持scatter-gather特性的sendFile。
 
@@ -493,7 +493,7 @@ for rapid development of maintainable high performance protocol servers & client
 
 2）需要具备其他的额外技能：要熟悉Java多线程编程，因为NIO编程涉及到Reactor模式，你必须对多线程和网络编程非常熟悉，才能编写出高质量的NIO程序。
 
-3）开发工足量和难度都非常大：例如，客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常流的处理等等。
+3）开发工作量和难度都非常大：例如，客户端面临断连重连、网络闪断、半包读写、失败缓存、网络拥塞和异常流的处理等等。
 
 4）JDK NIO的Bug：例如臭名昭著的Epoll Bug，它会导致 Selecotr 空轮询，最终导致CPU 100%。直到JDK1.7版本该问题仍旧存在，没有被根本解决。
 
@@ -619,7 +619,7 @@ Reactor的叫法：1-反应器模型；2-分发者模型（Dispatcher）；3-通
 
 3）缺点：可靠性问题，线程意外终止，或者进入死循环，会导致整个系统通信模块不可用，不能接收和处理外部消息，造成节点故障；
 
-4）使用场景：客户端的数量优先，业务处理非常快速，比如Redis在业务处理的时间复杂度O(1)的情况、。
+4）使用场景：客户端的数量有限，业务处理非常快速，比如Redis在业务处理的时间复杂度O(1)的情况、。
 
 
 
@@ -849,7 +849,7 @@ io.netty.channel.Channel
 7）不同协议、不同的阻塞类型的连接都有不同的 Channel 类型与之对应，常用的 Channel 类型：
 
 - NioSocketChannel，异步的客户端 TCP Socket 连接；
-- NIOServerSocketChannel，异步的服务器端 Tcp Socket 连接；
+- NioServerSocketChannel，异步的服务器端 Tcp Socket 连接；
 - NioDatagramChannel，异步的 UDP 连接；
 - NioSctpChannel，异步的客户端 Sctp 连接；
 - NioSctpServerChannel，异步的 Sctp 服务器端连接，这些通道涵盖了 UDP 和 TCP 网络 I/O以及文件 I/O。
