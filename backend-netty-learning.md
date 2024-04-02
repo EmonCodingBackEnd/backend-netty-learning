@@ -82,7 +82,7 @@ Linux：https://www.bilibili.com/video/BV1dW411M7xL/?spm_id_from=333.788.recomme
 
 ## NIO和BIO的比较
 
-1）BIO以流的方式处理数据，而NIO以快的方式处理数据，块I/O的效率比流I/O高很多。
+1）BIO以流的方式处理数据，而NIO以块的方式处理数据，块I/O的效率比流I/O高很多。
 
 2）BIO是阻塞的，NIO则是非阻塞的。
 
