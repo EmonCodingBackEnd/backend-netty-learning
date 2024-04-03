@@ -12,9 +12,11 @@ public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
         入站事件会从链表 head 往后传递到最后一个入站的 handler，出站事件会总链表的 tail 往前传递到最前一个出站的 handler
         出站写入：先业务=>后编码；所以，LongToByteEncoder 要在 NettyClientHandler 之前加入
         入站读取：先解码=>后业务；所以，ByteToLongDecoder 要在 NettyClientHandler 之前加入
+
+        特别注意：这里的ByteToLongDecoder和LongToByteEncoder顺序可互换，只要早于NettyClientHandler即可！！！
          */
-        pipeline.addLast(new LongToByteEncoder());
         pipeline.addLast(new ByteToLongDecoder());
+        pipeline.addLast(new LongToByteEncoder());
         pipeline.addLast(new NettyClientHandler());
     }
 }
