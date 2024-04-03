@@ -35,16 +35,16 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf.java.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.protostuff</groupId>
-                <artifactId>protostuff-core</artifactId>
-                <version>${protostuff.java.version}</version>
-            </dependency>
             <!--
             https://github.com/protostuff/protostuff
             Protostuff则是在Protobuf的基础上发展而来的。它是一个用于Java的库，旨在提供比原生Protobuf更简便的API，
             同时保持与Protobuf的兼容性。Protostuff在处理POJO（Plain Old Java Object）时更直观，无需像Protobuf那样使用IDL（Interface Definition Language）来定义消息结构。
             -->
+            <dependency>
+                <groupId>io.protostuff</groupId>
+                <artifactId>protostuff-core</artifactId>
+                <version>${protostuff.java.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.protostuff</groupId>
                 <artifactId>protostuff-runtime</artifactId>
